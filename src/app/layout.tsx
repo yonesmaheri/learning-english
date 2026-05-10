@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
 import "./globals.css";
+import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Providers from "@/shared/components/providers";
 
@@ -19,8 +19,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${myFont.className} h-full antialiased`}>
-      <body className="min-h-screen">
+    <html className="h-full">
+      <body className={`${myFont.className} h-full antialiased`}>
         <Providers>{children}</Providers>
       </body>
     </html>

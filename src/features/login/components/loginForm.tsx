@@ -1,0 +1,60 @@
+"use client";
+
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema, LoginFormValues } from "@/shared/lib/auth";
+import CustomInput from "@/shared/components/customInput";
+import CustomButton from "@/shared/components/customButton";
+
+export default function LoginForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: LoginFormValues) => {};
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 animate-in fade-in duration-500"
+    >
+      <CustomInput
+        label="ایمیل"
+        type="email"
+        placeholder="example@gmail.com"
+        error={errors.email?.message}
+        {...register("email")}
+      />
+
+      <CustomInput
+        label="رمز عبور"
+        type="password"
+        placeholder="رمز عبور خود را وارد کنید"
+        error={errors.password?.message}
+        {...register("password")}
+      />
+
+      <CustomButton label="ورود" loading={isSubmitting} />
+
+      <p className="pt-2 text-center text-sm text-gray-500">
+        حساب کاربری ندارید؟{" "}
+        <Link
+          href="/register"
+          className="font-bold text-indigo-600 transition-colors duration-300 hover:text-indigo-700"
+        >
+          ثبت‌نام کنید
+        </Link>
+      </p>
+    </form>
+  );
+}

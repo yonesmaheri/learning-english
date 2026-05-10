@@ -1,0 +1,57 @@
+"use client";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { RegisterFormValues, registerSchema } from "@/shared/lib/auth";
+import CustomInput from "@/shared/components/customInput";
+import CustomButton from "@/shared/components/customButton";
+
+export default function RegisterStudentForm() {
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = async (data: RegisterFormValues) => {
+
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="space-y-4 animate-in fade-in duration-500"
+    >
+      <CustomInput
+        label="نام"
+        placeholder="نام خود را وارد کنید"
+        error={errors.name?.message}
+        {...register("name")}
+      />
+      <CustomInput
+        label="ایمیل"
+        type="email"
+        placeholder="example@gmail.com"
+        error={errors.email?.message}
+        {...register("email")}
+      />
+      <CustomInput
+        label="رمز عبور"
+        type="password"
+        placeholder="حداقل ۶ کاراکتر"
+        error={errors.password?.message}
+        {...register("password")}
+      />
+      <CustomButton label="ثبت‌نام به عنوان دانشجو" loading={isSubmitting} />
+    </form>
+  );
+}
