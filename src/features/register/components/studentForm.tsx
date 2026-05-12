@@ -5,9 +5,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterFormValues, registerSchema } from "@/shared/lib/auth";
 import CustomInput from "@/shared/components/customInput";
 import CustomButton from "@/shared/components/customButton";
+import { useRegStudent } from "@/shared/api/services/auth";
+import { toast } from "react-toastify";
 
 export default function RegisterStudentForm() {
-
+  const { isPending, isSuccess, mutate } = useRegStudent();
   const {
     register,
     handleSubmit,
@@ -23,7 +25,14 @@ export default function RegisterStudentForm() {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-
+    mutate(data, {
+      onSuccess(data) {
+        toast.success("کاربر ثبت نام شد.");
+      },
+      onError() {
+        toast.error("مشکلی رخ داده است");
+      },
+    });
   };
 
   return (
@@ -51,7 +60,7 @@ export default function RegisterStudentForm() {
         error={errors.password?.message}
         {...register("password")}
       />
-      <CustomButton label="ثبت‌نام به عنوان دانشجو" loading={isSubmitting} />
+      <CustomButton label="ثبت‌نام به عنوان دانشجو" loading={isPending} />
     </form>
   );
 }

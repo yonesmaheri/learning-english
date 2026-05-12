@@ -6,11 +6,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, RegisterFormValues } from "@/shared/lib/auth";
 import CustomInput from "@/shared/components/customInput";
 import CustomButton from "@/shared/components/customButton";
+import { toast } from "react-toastify";
+import { useRegTutor } from "@/shared/api/services/auth";
 
 export default function RegisterTutorForm() {
-  const [serverError, setServerError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
-
+  const { isPending, isSuccess, mutate } = useRegTutor();
   const {
     register,
     handleSubmit,
@@ -26,30 +26,14 @@ export default function RegisterTutorForm() {
   });
 
   const onSubmit = async (data: RegisterFormValues) => {
-    setServerError("");
-    setSuccessMessage("");
-
-    try {
-      const res = await fetch("/api/tutor/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
-
-      const result = await res.json();
-
-      if (!res.ok) {
-        setServerError(result?.message || "ثبت‌نام مدرس با خطا مواجه شد");
-        return;
-      }
-
-      setSuccessMessage("ثبت‌نام مدرس با موفقیت انجام شد");
-      reset();
-    } catch {
-      setServerError("خطای ارتباط با سرور");
-    }
+    mutate(data, {
+      onSuccess(data) {
+        toast.success("کاربر ثبت نام شد.");
+      },
+      onError() {
+        toast.error("مشکلی رخ داده است");
+      },
+    });
   };
 
   return (
@@ -80,19 +64,7 @@ export default function RegisterTutorForm() {
         {...register("password")}
       />
 
-      {serverError && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600 animate-in fade-in duration-300">
-          {serverError}
-        </div>
-      )}
-
-      {successMessage && (
-        <div className="rounded-2xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-medium text-green-600 animate-in fade-in duration-300">
-          {successMessage}
-        </div>
-      )}
-
-      <CustomButton label="ثبت‌نام به عنوان مدرس" loading={isSubmitting} />
+      <CustomButton label="ثبت‌نام به عنوان مدرس" loading={isPending} />
     </form>
   );
 }

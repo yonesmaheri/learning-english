@@ -2,6 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Providers from "@/shared/components/providers";
+import { ToastContainer } from "react-toastify";
 
 const myFont = localFont({
   src: "../shared/fonts/Vazir.woff2",
@@ -22,6 +23,7 @@ export default function RootLayout({
     <html className="h-full">
       <body className={`${myFont.className} h-full antialiased`}>
         <Providers>{children}</Providers>
+        <ToastContainer rtl position="bottom-center" />
       </body>
     </html>
   );

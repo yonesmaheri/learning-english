@@ -6,8 +6,12 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormValues } from "@/shared/lib/auth";
 import CustomInput from "@/shared/components/customInput";
 import CustomButton from "@/shared/components/customButton";
+import { useLogin } from "@/shared/api/services/auth";
+import { toast } from "react-toastify";
 
 export default function LoginForm() {
+  const { isPending, isSuccess, mutate } = useLogin();
+
   const {
     register,
     handleSubmit,
@@ -21,7 +25,15 @@ export default function LoginForm() {
     },
   });
 
-  const onSubmit = async (data: LoginFormValues) => {};
+  const onSubmit = async (data: LoginFormValues) => {
+    mutate(data, {
+      onSuccess(data) {
+        toast.success('کاربر وارد شد.')
+      }, onError(){
+        toast.error('مشکلی رخ داده است')
+      }
+    });
+  };
 
   return (
     <form
@@ -44,7 +56,7 @@ export default function LoginForm() {
         {...register("password")}
       />
 
-      <CustomButton label="ورود" loading={isSubmitting} />
+      <CustomButton label="ورود" loading={isPending} />
 
       <p className="pt-2 text-center text-sm text-gray-500">
         حساب کاربری ندارید؟{" "}
