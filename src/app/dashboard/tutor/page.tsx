@@ -1,9 +1,8 @@
-import React from 'react'
+import TutorDashboard from "@/shared/components/tutorDashboard";
+import React from "react";
 
-function TutorDashboard() {
-  return (
-    <div>TutorDashboard</div>
-  )
+function TutorDashboardPage() {
+  return <TutorDashboard />;
 }
 
-export default TutorDashboard
+export default TutorDashboardPage;

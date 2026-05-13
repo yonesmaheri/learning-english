@@ -17,7 +17,6 @@ const navItems = [
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const { isPending, isSuccess, data } = useMe();
-  const isLoggedIn = false;
 
   return (
     <header
