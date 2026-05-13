@@ -7,10 +7,13 @@ import { registerSchema, RegisterFormValues } from "@/shared/lib/auth";
 import CustomInput from "@/shared/components/customInput";
 import CustomButton from "@/shared/components/customButton";
 import { toast } from "react-toastify";
-import { useRegTutor } from "@/shared/api/services/auth";
+import { useRegister } from "@/shared/api/services/auth";
+import { useRouter } from "next/navigation";
 
 export default function RegisterTutorForm() {
-  const { isPending, isSuccess, mutate } = useRegTutor();
+  const router = useRouter();
+
+  const { isPending, isSuccess, mutate } = useRegister();
   const {
     register,
     handleSubmit,
@@ -19,9 +22,11 @@ export default function RegisterTutorForm() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       password: "",
+      is_teacher: true,
     },
   });
 
@@ -29,9 +34,10 @@ export default function RegisterTutorForm() {
     mutate(data, {
       onSuccess(data) {
         toast.success("کاربر ثبت نام شد.");
+        router.push("/login");
       },
       onError() {
-        toast.error("مشکلی رخ داده است");
+        toast.error("کاربر با این اطلاعات ثبت نام شده است");
       },
     });
   };
@@ -44,8 +50,14 @@ export default function RegisterTutorForm() {
       <CustomInput
         label="نام"
         placeholder="نام خود را وارد کنید"
-        error={errors.name?.message}
-        {...register("name")}
+        error={errors.first_name?.message}
+        {...register("first_name")}
+      />
+      <CustomInput
+        label="نام خانوادگی"
+        placeholder="نام خانوادگی خود را وارد کنید"
+        error={errors.last_name?.message}
+        {...register("last_name")}
       />
 
       <CustomInput

@@ -5,11 +5,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterFormValues, registerSchema } from "@/shared/lib/auth";
 import CustomInput from "@/shared/components/customInput";
 import CustomButton from "@/shared/components/customButton";
-import { useRegStudent } from "@/shared/api/services/auth";
+import { useRegister } from "@/shared/api/services/auth";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function RegisterStudentForm() {
-  const { isPending, isSuccess, mutate } = useRegStudent();
+  const router = useRouter();
+
+  const { isPending, isSuccess, mutate } = useRegister();
   const {
     register,
     handleSubmit,
@@ -18,9 +21,11 @@ export default function RegisterStudentForm() {
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      name: "",
+      first_name: "",
+      last_name: "",
       email: "",
       password: "",
+      is_teacher: false,
     },
   });
 
@@ -28,9 +33,10 @@ export default function RegisterStudentForm() {
     mutate(data, {
       onSuccess(data) {
         toast.success("کاربر ثبت نام شد.");
+        router.push("/login");
       },
       onError() {
-        toast.error("مشکلی رخ داده است");
+        toast.error("کاربر با این اطلاعات ثبت نام شده است");
       },
     });
   };
@@ -43,8 +49,14 @@ export default function RegisterStudentForm() {
       <CustomInput
         label="نام"
         placeholder="نام خود را وارد کنید"
-        error={errors.name?.message}
-        {...register("name")}
+        error={errors.first_name?.message}
+        {...register("first_name")}
+      />
+      <CustomInput
+        label="نام خانوادگی"
+        placeholder="نام خانوادگی خود را وارد کنید"
+        error={errors.last_name?.message}
+        {...register("last_name")}
       />
       <CustomInput
         label="ایمیل"

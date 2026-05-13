@@ -8,8 +8,10 @@ import CustomInput from "@/shared/components/customInput";
 import CustomButton from "@/shared/components/customButton";
 import { useLogin } from "@/shared/api/services/auth";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
+  const router = useRouter();
   const { isPending, isSuccess, mutate } = useLogin();
 
   const {
@@ -27,11 +29,10 @@ export default function LoginForm() {
 
   const onSubmit = async (data: LoginFormValues) => {
     mutate(data, {
-      onSuccess(data) {
-        toast.success('کاربر وارد شد.')
-      }, onError(){
-        toast.error('مشکلی رخ داده است')
-      }
+      async onSuccess(data) {
+        toast.success("کاربر وارد شد.");
+        router.push("/");
+      },
     });
   };
 

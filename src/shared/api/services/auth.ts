@@ -1,8 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiCall } from "../apiCall";
 
-const login = async (data: { email: string; password: string }) => {
-  const res = await apiCall.post("/login", data);
+const login = async (data: any) => {
+  const res = await apiCall.post("/login/", data);
   return res.data;
 };
 
@@ -12,32 +12,24 @@ export const useLogin = () => {
   });
 };
 
-const regStudent = async (data: {
-  name: string;
-  email: string;
-  password: string;
-}) => {
-  const res = await apiCall.post("/register/student", data);
+const register = async (data: any) => {
+  const res = await apiCall.post("/register/", data);
   return res.data;
 };
 
-export const useRegStudent = () => {
+export const useRegister = () => {
   return useMutation({
-    mutationFn: regStudent,
+    mutationFn: register,
   });
 };
 
-const regTutor = async (data: {
-  name: string;
-  email: string;
-  password: string;
-}) => {
-  const res = await apiCall.post("/register/tutor", data);
+const me = async () => {
+  const res = await apiCall.get("/me/");
   return res.data;
 };
-
-export const useRegTutor = () => {
-  return useMutation({
-    mutationFn: regTutor,
+export const useMe = () => {
+  return useQuery({
+    queryKey: ["me"],
+    queryFn: me,
   });
 };

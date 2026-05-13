@@ -1,18 +1,20 @@
 import Link from "next/link";
 
 type NavActionsProps = {
-  isLoggedIn?: boolean;
   mobile?: boolean;
+  data: any;
+  isSuccess: boolean;
 };
 
 export default function NavActions({
-  isLoggedIn = false,
   mobile = false,
+  isSuccess,
+  data,
 }: NavActionsProps) {
-  if (isLoggedIn) {
+  if (isSuccess) {
     return (
       <Link
-        href="/dashboard"
+        href={`/dashboard/${data.is_teacher ? "tutor" : "student"}`}
         className={`inline-flex items-center justify-center rounded-xl bg-gray-900 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-200 ${
           mobile ? "w-full" : ""
         }`}
