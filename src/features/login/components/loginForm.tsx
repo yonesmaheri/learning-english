@@ -9,11 +9,12 @@ import CustomButton from "@/shared/components/customButton";
 import { useLogin } from "@/shared/api/services/auth";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/shared/store/auth";
 
 export default function LoginForm() {
   const router = useRouter();
   const { isPending, isSuccess, mutate } = useLogin();
-
+  const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
   const {
     register,
     handleSubmit,
@@ -30,6 +31,9 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     mutate(data, {
       async onSuccess(data) {
+        localStorage.setItem("access", data.access);
+        localStorage.setItem("refresh", data.refresh);
+        setIsLoggedIn(true);
         toast.success("کاربر وارد شد.");
         router.push("/");
       },

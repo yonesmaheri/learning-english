@@ -1,7 +1,8 @@
 "use client";
 
+import { useLogout } from "@/shared/api/services/auth";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const links = [
   {
@@ -13,23 +14,36 @@ const links = [
     href: "/dashboard/student/courses",
   },
   {
-    title: "علاقه مندی ها",
-    href: "/dashboard/student/favorites",
-  },
-  {
     title: "پروفایل",
-    href: "/dashboard/student/profile",
+    href: "/dashboard/student/edit",
   },
+  // {
+  //   title: "پرداخت ها",
+  //   href: "/dashboard/student/payments",
+  // },
+  // {
+  //   title: "تکالیف",
+  //   href: "/dashboard/student/homeworks",
+  // },
 ];
 
 export default function StudentSidebar() {
   const pathname = usePathname();
-
+  const router = useRouter();
+  const { mutate: logoutMutate, isPending } = useLogout();
+  function logout() {
+    logoutMutate(undefined, {
+      onSuccess() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("access");
+        router.push("/");
+      },
+    });
+  }
   return (
     <div className="flex h-full flex-col">
-      {/* Header */}
       <div className="mb-10">
-        <h2 className="text-2xl font-black">پنل دانشجو</h2>
+        <h2 className="text-2xl font-black">پنل دانش آموز</h2>
 
         <p className="mt-2 text-sm text-slate-400">
           مدیریت دوره ها و حساب کاربری
@@ -38,8 +52,7 @@ export default function StudentSidebar() {
 
       <nav className="flex-1 space-y-2">
         {links.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = pathname === item.href;
 
           return (
             <Link
@@ -61,6 +74,8 @@ export default function StudentSidebar() {
       </nav>
 
       <button
+        onClick={logout}
+        disabled={isPending}
         className="
           mt-6 flex items-center gap-3 rounded-2xl
           border border-red-500/20 bg-red-500/10
@@ -68,7 +83,7 @@ export default function StudentSidebar() {
           hover:bg-red-500/20
         "
       >
-        <span>خروج از حساب</span>
+        <span>{isPending ? "لطفا صبر کنید..." : " خروج از حساب"}</span>
       </button>
     </div>
   );

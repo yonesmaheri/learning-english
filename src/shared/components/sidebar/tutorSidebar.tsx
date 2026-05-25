@@ -8,21 +8,17 @@ const links = [
     title: "داشبورد",
     href: "/dashboard/tutor",
   },
-  {
-    title: "دوره های من",
-    href: "/dashboard/tutor/courses",
-  },
-  {
-    title: "ایجاد دوره",
-    href: "/dashboard/tutor/create-course",
-  },
-  {
-    title: "دانش آموزان",
-    href: "/dashboard/tutor/students",
-  },
+  // {
+  //   title: "دوره های من",
+  //   href: "/dashboard/tutor/courses",
+  // },
+  // {
+  //   title: "ایجاد دوره",
+  //   href: "/dashboard/tutor/create-course",
+  // },
   {
     title: "پروفایل",
-    href: "/dashboard/tutor/profile",
+    href: "/dashboard/tutor/edit",
   },
 ];
 
@@ -32,19 +28,14 @@ export default function TutorSidebar() {
   return (
     <div className="flex h-full flex-col">
       <div className="mb-10">
-        <h2 className="text-2xl font-black">
-          پنل مدرس
-        </h2>
+        <h2 className="text-2xl font-black">پنل مدرس</h2>
 
-        <p className="mt-2 text-sm text-slate-400">
-          مدیریت دوره ها و دانش آموزان
-        </p>
+        <p className="mt-2 text-sm text-slate-400">مدیریت دوره ها و پروفایل</p>
       </div>
 
       <nav className="flex-1 space-y-2">
         {links.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+          const isActive = pathname === item.href;
 
           return (
             <Link

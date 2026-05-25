@@ -67,14 +67,27 @@ export default function DashboardShell({
           </div>
         </main>
       </div>
-      {isSuccess && !data.tutor_approved && (
+      {isSuccess && data.is_teacher && !data.tutor_approved && (
         <div className="fixed bg-black/50 top-0 bottom-0 left-0 right-0 w-full h-full flex items-center justify-center">
-          <div className="bg-white rounded-2xl px-10 py-5 max-w-200 flex flex-col">
-            متاسفانه حساب کاربری شما هنوز توسط ادمین تایید نشده است
-            <div className="text-center mt-10">
-              <Link href={'/'} className="inline-flex items-center justify-center rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-600 hover:text-indigo-600">
+          <div className="bg-white rounded-2xl text-center px-10 py-5 max-w-200 flex flex-col">
+            {!data.has_tutor_profile
+              ? "لطفا برای ادامه، یک پروفایل ایجاد کنید."
+              : " متاسفانه حساب کاربری شما هنوز توسط ادمین تایید نشده است"}
+            <div className="flex items-center justify-center gap-5 mt-10">
+              <Link
+                href={"/"}
+                className="inline-flex items-center justify-center rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-600 hover:text-indigo-600"
+              >
                 بازگشت به خانه
               </Link>
+              {!data.has_tutor_profile && (
+                <Link
+                  href={"/tutor/create-profile"}
+                  className="inline-flex items-center justify-center rounded-xl border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 transition-all duration-300 hover:-translate-y-0.5 hover:border-indigo-600 hover:text-indigo-600"
+                >
+                  ایجاد پروفایل
+                </Link>
+              )}
             </div>
           </div>
         </div>

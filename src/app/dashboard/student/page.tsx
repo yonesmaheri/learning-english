@@ -1,9 +1,8 @@
-import React from 'react'
+import StudentDashboard from "@/features/studentDashboard";
+import React from "react";
 
-function StudentDashboard() {
-  return (
-    <div>StudentDashboard</div>
-  )
+function StudentDashboardPage() {
+  return <StudentDashboard />;
 }
 
-export default StudentDashboard
+export default StudentDashboardPage;

@@ -33,3 +33,24 @@ export const useMe = () => {
     queryFn: me,
   });
 };
+
+const resetPassword = async (data: any) => {
+  const res = await apiCall.post("/reset-password/", data);
+  return res.data;
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: resetPassword,
+  });
+};
+
+const logout = async () => {
+  const res = await apiCall.post("/logout/");
+  return res.data;
+};
+export const useLogout = () => {
+  return useMutation({
+    mutationFn: logout,
+  });
+};

@@ -1,31 +1,69 @@
 import axios from "axios";
-// import { toast } from "react-toastify";
 
 export const apiCall = axios.create({
   baseURL: "http://localhost:8000/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
   withCredentials: true,
 });
 
-// apiCall.interceptors.response.use(
-//   (response) => response,
-//   (error) => {
-//     if (error.response) {
-//       const status = error.response.status;
-//       const message = error.response.data.detail || "Something went wrong";
-//       if (status === 404) toast.error(message);
-//       else if (status === 400) toast.error(message);
-//       else if (status === 401) {
-//         toast.error(message);
-//       } else toast.error(`Error ${status}: ${message}`);
-//     } else if (error.request) {
-//       toast.error("No response from server, please try again.");
-//     } else {
-//       toast.error("Request error: " + error.message);
-//     }
+// جلوگیری از چند بار refresh همزمان
+let isRefreshing = false;
+let failedQueue = [];
 
-//     return Promise.reject(error);
-//   },
-// );
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+
+  failedQueue = [];
+};
+
+apiCall.interceptors.response.use(
+  (response) => response,
+
+  async (error) => {
+    const originalRequest = error.config;
+
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise(function (resolve, reject) {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(() => {
+            return apiCall(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      try {
+        await axios.post(
+          "http://localhost:8000/api/token/refresh/",
+          {},
+          { withCredentials: true },
+        );
+
+        processQueue(null);
+        return apiCall(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+
+        console.log("Refresh token expired. Redirecting to login...");
+        // window.location.href = "/login";
+
+        return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
+      }
+    }
+
+    return Promise.reject(error);
+  },
+);

@@ -34,7 +34,7 @@ export default function RegisterTutorForm() {
     mutate(data, {
       onSuccess(data) {
         toast.success("کاربر ثبت نام شد.");
-        router.push("/login");
+        router.push("/tutor/create-profile");
       },
       onError() {
         toast.error("کاربر با این اطلاعات ثبت نام شده است");

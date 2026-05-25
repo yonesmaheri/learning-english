@@ -1,4 +1,4 @@
-import TutorDashboard from "@/shared/components/tutorDashboard";
+import TutorDashboard from "@/features/tutorDashboard";
 import React from "react";
 
 function TutorDashboardPage() {
