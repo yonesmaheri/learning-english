@@ -110,3 +110,25 @@ export const useDeleteExperience = () => {
     mutationFn: deleteExperience,
   });
 };
+
+const addTutorCourse = async (data: any) => {
+  const res = await apiCall.post("/tutor-courses/", data);
+  return res.data;
+};
+
+export const useAddTutorCourse = () => {
+  return useMutation({
+    mutationFn: addTutorCourse,
+  });
+};
+
+const deleteTutorCourse = async (id: number) => {
+  const res = await apiCall.delete(`/tutor-courses/${id}/`);
+  return res.data;
+};
+
+export const useDeleteTutorCourse = () => {
+  return useMutation({
+    mutationFn: deleteTutorCourse,
+  });
+};

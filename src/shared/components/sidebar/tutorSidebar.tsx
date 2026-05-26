@@ -8,17 +8,25 @@ const links = [
     title: "داشبورد",
     href: "/dashboard/tutor",
   },
-  // {
-  //   title: "دوره های من",
-  //   href: "/dashboard/tutor/courses",
-  // },
-  // {
-  //   title: "ایجاد دوره",
-  //   href: "/dashboard/tutor/create-course",
-  // },
   {
-    title: "پروفایل",
+    title: "اطلاعات فردی",
     href: "/dashboard/tutor/edit",
+  },
+  {
+    title: "گواهینامه‌ها",
+    href: "/dashboard/tutor/certificates",
+  },
+  {
+    title: "سوابق تحصیلی",
+    href: "/dashboard/tutor/education",
+  },
+  {
+    title: "سوابق کاری",
+    href: "/dashboard/tutor/experience",
+  },
+  {
+    title: "دوره‌های آموزشی",
+    href: "/dashboard/tutor/profile-courses",
   },
 ];
 

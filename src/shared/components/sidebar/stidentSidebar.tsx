@@ -16,15 +16,7 @@ const links = [
   {
     title: "پروفایل",
     href: "/dashboard/student/edit",
-  },
-  // {
-  //   title: "پرداخت ها",
-  //   href: "/dashboard/student/payments",
-  // },
-  // {
-  //   title: "تکالیف",
-  //   href: "/dashboard/student/homeworks",
-  // },
+  }
 ];
 
 export default function StudentSidebar() {

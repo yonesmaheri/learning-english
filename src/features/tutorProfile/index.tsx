@@ -4,20 +4,12 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
 
 import { useMe, useResetPassword } from "@/shared/api/services/auth";
 import Skeleton from "@/shared/components/skeleton";
 import { toast } from "react-toastify";
-import {
-  useUpdateTutor,
-  useTutorDashboard,
-  useAddCertificate,
-  useDeleteCertificate,
-  useAddEducation,
-  useDeleteEducation,
-  useAddExperience,
-  useDeleteExperience,
-} from "@/shared/api/services/tutor";
+import { useUpdateTutor, useTutorDashboard } from "@/shared/api/services/tutor";
 import { useQueryClient } from "@tanstack/react-query";
 import CustomInput from "@/shared/components/customInput";
 
@@ -32,33 +24,8 @@ const resetPasswordSchema = z.object({
   new_password: z.string().min(8, "رمز عبور جدید باید حداقل ۸ کاراکتر باشد"),
 });
 
-const certificateSchema = z.object({
-  title: z.string().min(1, "عنوان الزامی است"),
-  issued_by: z.string().optional(),
-  issue_date: z.string().optional(),
-});
-
-const educationSchema = z.object({
-  degree: z.string().min(1, "مدرک الزامی است"),
-  institution_name: z.string().min(1, "نام موسسه الزامی است"),
-  field: z.string().optional(),
-  start_date: z.string().optional(),
-  end_date: z.string().optional(),
-});
-
-const experienceSchema = z.object({
-  title: z.string().min(1, "عنوان شغلی الزامی است"),
-  organization: z.string().min(1, "نام سازمان الزامی است"),
-  start_date: z.string().optional(),
-  end_date: z.string().optional(),
-  description: z.string().optional(),
-});
-
 type TutorProfileFormValues = z.infer<typeof tutorProfileSchema>;
 type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>;
-type CertificateFormValues = z.infer<typeof certificateSchema>;
-type EducationFormValues = z.infer<typeof educationSchema>;
-type ExperienceFormValues = z.infer<typeof experienceSchema>;
 
 function TutorProfile() {
   const queryClient = useQueryClient();
@@ -71,15 +38,6 @@ function TutorProfile() {
 
   const { mutate: updateProfile, isPending: mutatePending } = useUpdateTutor();
   const { mutate: mutatePass, isPending: resetPending } = useResetPassword();
-
-  const { mutate: addCert, isPending: addCertPending } = useAddCertificate();
-  const { mutate: deleteCert } = useDeleteCertificate();
-
-  const { mutate: addEdu, isPending: addEduPending } = useAddEducation();
-  const { mutate: deleteEdu } = useDeleteEducation();
-
-  const { mutate: addExp, isPending: addExpPending } = useAddExperience();
-  const { mutate: deleteExp } = useDeleteExperience();
 
   const {
     register: registerProfile,
@@ -106,33 +64,6 @@ function TutorProfile() {
       email: "",
       new_password: "",
     },
-  });
-
-  const {
-    register: registerCert,
-    handleSubmit: handleSubmitCert,
-    reset: resetCert,
-    formState: { errors: certErrors },
-  } = useForm<CertificateFormValues>({
-    resolver: zodResolver(certificateSchema),
-  });
-
-  const {
-    register: registerEdu,
-    handleSubmit: handleSubmitEdu,
-    reset: resetEdu,
-    formState: { errors: eduErrors },
-  } = useForm<EducationFormValues>({
-    resolver: zodResolver(educationSchema),
-  });
-
-  const {
-    register: registerExp,
-    handleSubmit: handleSubmitExp,
-    reset: resetExp,
-    formState: { errors: expErrors },
-  } = useForm<ExperienceFormValues>({
-    resolver: zodResolver(experienceSchema),
   });
 
   useEffect(() => {
@@ -168,59 +99,6 @@ function TutorProfile() {
     });
   };
 
-  const onAddCert = (values: CertificateFormValues) => {
-    if (!tutorData?.tutor?.id) return;
-    addCert(
-      { ...values, tutor: tutorData.tutor.id },
-      {
-        onSuccess() {
-          toast.success("گواهینامه اضافه شد");
-          resetCert();
-          queryClient.invalidateQueries({ queryKey: ["tutor-dashboard"] });
-        },
-      },
-    );
-  };
-
-  const onAddEdu = (values: EducationFormValues) => {
-    if (!tutorData?.tutor?.id) return;
-    addEdu(
-      { ...values, tutor: tutorData.tutor.id },
-      {
-        onSuccess() {
-          toast.success("سابقه تحصیلی اضافه شد");
-          resetEdu();
-          queryClient.invalidateQueries({ queryKey: ["tutor-dashboard"] });
-        },
-      },
-    );
-  };
-
-  const onAddExp = (values: ExperienceFormValues) => {
-    if (!tutorData?.tutor?.id) return;
-    addExp(
-      { ...values, tutor: tutorData.tutor.id },
-      {
-        onSuccess() {
-          toast.success("سابقه کاری اضافه شد");
-          resetExp();
-          queryClient.invalidateQueries({ queryKey: ["tutor-dashboard"] });
-        },
-      },
-    );
-  };
-
-  const onDeleteItem = (id: number, type: "cert" | "edu" | "exp") => {
-    const mutator =
-      type === "cert" ? deleteCert : type === "edu" ? deleteEdu : deleteExp;
-    mutator(id, {
-      onSuccess() {
-        toast.success("آیتم مورد نظر حذف شد");
-        queryClient.invalidateQueries({ queryKey: ["tutor-dashboard"] });
-      },
-    });
-  };
-
   if (mePending || tutorPending) {
     return (
       <div dir="rtl">
@@ -247,19 +125,19 @@ function TutorProfile() {
           <CustomInput
             label="ایمیل"
             type="email"
-            error={profileErrors.email?.message}
+            error={profileErrors.email?.message as string}
             {...registerProfile("email")}
           />
 
           <CustomInput
             label="نام"
-            error={profileErrors.first_name?.message}
+            error={profileErrors.first_name?.message as string}
             {...registerProfile("first_name")}
           />
 
           <CustomInput
             label="نام خانوادگی"
-            error={profileErrors.last_name?.message}
+            error={profileErrors.last_name?.message as string}
             {...registerProfile("last_name")}
           />
 
@@ -273,196 +151,189 @@ function TutorProfile() {
         </form>
       </section>
 
-      <section className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
-        <h2 className="text-xl font-black mb-6 text-right text-slate-800">
-          گواهینامه‌ها
-        </h2>
-        <div className="space-y-4 mb-8">
-          {tutorData?.tutor?.certificates?.map((cert: any) => (
-            <div
-              key={cert.id}
-              className="flex justify-between items-center border border-slate-100 bg-slate-50/50 p-4 rounded-2xl transition-all hover:bg-white hover:shadow-md hover:shadow-indigo-50"
-            >
-              <div>
-                <p className="font-bold text-slate-800">{cert.title}</p>
-                <p className="text-sm text-slate-500 font-medium">
-                  {cert.issued_by}
-                </p>
-              </div>
-              <button
-                onClick={() => onDeleteItem(cert.id, "cert")}
-                className="text-red-500 hover:text-red-700 text-sm font-bold transition-colors"
-              >
-                حذف
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <form
-          onSubmit={handleSubmitCert(onAddCert)}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <Link
+          href="/dashboard/tutor/certificates"
+          className="group bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between"
         >
-          <CustomInput
-            label="عنوان گواهینامه"
-            error={certErrors.title?.message}
-            {...registerCert("title")}
-          />
-          <CustomInput
-            label="صادر کننده"
-            error={certErrors.issued_by?.message}
-            {...registerCert("issued_by")}
-          />
-          <CustomInput
-            type="date"
-            {...registerCert("issue_date")}
-            label="تاریخ اخذ گواهینامه"
-          />
-          <button
-            type="submit"
-            disabled={addCertPending}
-            className="rounded-2xl bg-indigo-600 py-3 px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-70"
-          >
-            {addCertPending ? "..." : "افزودن گواهینامه"}
-          </button>
-        </form>
-      </section>
-
-      <section className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
-        <h2 className="text-xl font-black mb-6 text-right text-slate-800">
-          سوابق تحصیلی
-        </h2>
-        <div className="space-y-4 mb-8">
-          {tutorData?.tutor?.educations?.map((edu: any) => (
-            <div
-              key={edu.id}
-              className="flex justify-between items-center border border-slate-100 bg-slate-50/50 p-4 rounded-2xl transition-all hover:bg-white hover:shadow-md hover:shadow-indigo-50"
-            >
-              <div>
-                <p className="font-bold text-slate-800">{edu.degree}</p>
-                <p className="text-sm text-slate-500 font-medium">
-                  {edu.institution_name}
-                </p>
-              </div>
-              <button
-                onClick={() => onDeleteItem(edu.id, "edu")}
-                className="text-red-500 hover:text-red-700 text-sm font-bold transition-colors"
+          <div className="flex items-center gap-4">
+            <div className="bg-indigo-50 p-3 rounded-xl group-hover:bg-indigo-100 transition-colors text-indigo-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                حذف
-              </button>
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                <path d="M11 8v5l3 3" />
+              </svg>
             </div>
-          ))}
-        </div>
+            <div className="text-right">
+              <h3 className="text-lg font-black text-slate-800">
+                گواهینامه‌ها
+              </h3>
+              <p className="text-sm text-slate-500">
+                مدیریت مدارک و گواهینامه‌های اخذ شده
+              </p>
+            </div>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-slate-400 group-hover:translate-x-[-4px] transition-transform"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </Link>
 
-        <form
-          onSubmit={handleSubmitEdu(onAddEdu)}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end"
+        <Link
+          href="/dashboard/tutor/education"
+          className="group bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between"
         >
-          <CustomInput
-            label="مقطع/مدرک"
-            error={eduErrors.degree?.message}
-            {...registerEdu("degree")}
-          />
-          <CustomInput
-            label="نام دانشگاه/موسسه"
-            error={eduErrors.institution_name?.message}
-            {...registerEdu("institution_name")}
-          />
-          <CustomInput
-            label="حوزه/زمینه"
-            error={eduErrors.field?.message}
-            {...registerEdu("field")}
-          />
-          <CustomInput
-            type="date"
-            {...registerEdu("start_date")}
-            label="تاریخ شروع"
-          />
-          <CustomInput
-            type="date"
-            {...registerEdu("end_date")}
-            label="تاریخ پایان"
-          />
-          <button
-            type="submit"
-            disabled={addEduPending}
-            className="rounded-2xl bg-indigo-600 py-3 px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-70"
-          >
-            {addEduPending ? "..." : "افزودن مدرک"}
-          </button>
-        </form>
-      </section>
-
-      {/* Experience Section */}
-      <section className="bg-white border border-slate-200 p-8 rounded-2xl shadow-sm">
-        <h2 className="text-xl font-black mb-6 text-right text-slate-800">
-          سوابق کاری
-        </h2>
-        <div className="space-y-4 mb-8">
-          {tutorData?.tutor?.experiences?.map((exp: any) => (
-            <div
-              key={exp.id}
-              className="flex justify-between items-center border border-slate-100 bg-slate-50/50 p-4 rounded-2xl transition-all hover:bg-white hover:shadow-md hover:shadow-indigo-50"
-            >
-              <div>
-                <p className="font-bold text-slate-800">{exp.title}</p>
-                <p className="text-sm text-slate-500 font-medium">
-                  {exp.organization}
-                </p>
-              </div>
-              <button
-                onClick={() => onDeleteItem(exp.id, "exp")}
-                className="text-red-500 hover:text-red-700 text-sm font-bold transition-colors"
+          <div className="flex items-center gap-4">
+            <div className="bg-indigo-50 p-3 rounded-xl group-hover:bg-indigo-100 transition-colors text-indigo-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               >
-                حذف
-              </button>
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+              </svg>
             </div>
-          ))}
-        </div>
-
-        <form onSubmit={handleSubmitExp(onAddExp)}>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-            <CustomInput
-              label="عنوان شغلی"
-              error={expErrors.title?.message}
-              {...registerExp("title")}
-            />
-            <CustomInput
-              label="سازمان"
-              error={expErrors.organization?.message}
-              {...registerExp("organization")}
-            />
-            <CustomInput
-              label="تاریخ شروع"
-              type="date"
-              {...registerExp("start_date")}
-            />
-            <CustomInput
-              label="تاریخ پایان"
-              type="date"
-              {...registerExp("end_date")}
-            />
+            <div className="text-right">
+              <h3 className="text-lg font-black text-slate-800">
+                سوابق تحصیلی
+              </h3>
+              <p className="text-sm text-slate-500">
+                مدیریت سوابق دانشگاهی و تحصیلی
+              </p>
+            </div>
           </div>
-
-          <div className="mt-6">
-            <label className="block text-sm font-semibold text-gray-700">
-              توضیحات
-            </label>
-            <textarea
-              className="w-full rounded-xl border border-slate-200 p-3 min-h-24"
-              {...registerExp("description")}
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={addExpPending}
-            className="rounded-2xl bg-indigo-600 py-3 px-6 text-sm font-bold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200 disabled:opacity-70"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-slate-400 group-hover:translate-x-[-4px] transition-transform"
           >
-            {addExpPending ? "..." : "افزودن سابقه"}
-          </button>
-        </form>
-      </section>
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </Link>
+
+        <Link
+          href="/dashboard/tutor/experience"
+          className="group bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-4">
+            <div className="bg-indigo-50 p-3 rounded-xl group-hover:bg-indigo-100 transition-colors text-indigo-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+              </svg>
+            </div>
+            <div className="text-right">
+              <h3 className="text-lg font-black text-slate-800">سوابق کاری</h3>
+              <p className="text-sm text-slate-500">
+                مدیریت تجربیات و سوابق شغلی
+              </p>
+            </div>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-slate-400 group-hover:translate-x-[-4px] transition-transform"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </Link>
+
+        <Link
+          href="/dashboard/tutor/profile-courses"
+          className="group bg-white border border-slate-200 p-8 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 flex items-center justify-between"
+        >
+          <div className="flex items-center gap-4">
+            <div className="bg-indigo-50 p-3 rounded-xl group-hover:bg-indigo-100 transition-colors text-indigo-600">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+            </div>
+            <div className="text-right">
+              <h3 className="text-lg font-black text-slate-800">
+                دوره‌های آموزشی
+              </h3>
+              <p className="text-sm text-slate-500">
+                مدیریت دوره‌ها و کلاس‌های تدریس
+              </p>
+            </div>
+          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="text-slate-400 group-hover:translate-x-[-4px] transition-transform"
+          >
+            <path d="m15 18-6-6 6-6" />
+          </svg>
+        </Link>
+      </div>
 
       <section>
         <h2 className="text-2xl font-black mb-10 text-right text-slate-800">
@@ -479,7 +350,7 @@ function TutorProfile() {
             label="رمز عبور جدید"
             type="password"
             placeholder="رمز عبور جدید را وارد کنید"
-            error={resetPasswordErrors.new_password?.message}
+            error={resetPasswordErrors.new_password?.message as string}
             {...registerResetPassword("new_password")}
           />
 
