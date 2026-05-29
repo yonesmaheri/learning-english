@@ -8,10 +8,14 @@ export async function checkAuth() {
 
   if (res.status === 401) {
     useAuthStore.getState().setIsLoggedIn(false);
+    useAuthStore.getState().setIsTutor(false);
     return;
   }
 
   if (res.ok) {
+    const data = await res.json();
+
     useAuthStore.getState().setIsLoggedIn(true);
+    useAuthStore.getState().setIsTutor(data.is_teacher);
   }
 }

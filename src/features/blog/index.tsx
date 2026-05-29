@@ -23,6 +23,7 @@ function Blogs() {
             ).format(new Date(item.created_at));
             return (
               <BlogCard
+                id={item.id}
                 key={item.id}
                 author={item.author}
                 excerpt={item.description}

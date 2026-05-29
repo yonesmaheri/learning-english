@@ -11,3 +11,15 @@ export const useBlogs = () => {
     queryFn: blogs,
   });
 };
+
+const blog = async (id: number) => {
+  const res = await apiCall.get(`/blogs/${id}`);
+  return res.data;
+};
+
+export const useBlog = (id: number) => {
+  return useQuery({
+    queryKey: ["blog", id],
+    queryFn: () => blog(id),
+  });
+};

@@ -5,7 +5,6 @@ import { useState } from "react";
 import Modal from "../modal";
 import CourseDetailsModal from "./components/courseDetailsModal";
 import { Course } from "@/shared/types/courses";
-import { useEnroll } from "@/shared/api/services/courses";
 import RegisterCourseModal from "./components/registerCourseModal";
 
 type CourseCardProps = {
@@ -14,10 +13,10 @@ type CourseCardProps = {
 
 export default function CourseCard({ course }: CourseCardProps) {
   const is_loggedin = useAuthStore((state) => state.is_loggedin);
+  const is_tutor = useAuthStore((state) => state.is_tutor);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [showLoginModal, setShowLoginModal] = useState(false);
-
 
   const handleRegisterClick = () => {
     if (is_loggedin) {
@@ -48,12 +47,14 @@ export default function CourseCard({ course }: CourseCardProps) {
           </div>
 
           <div className="flex items-center justify-between pt-2">
-            <button
-              onClick={handleRegisterClick}
-              className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200"
-            >
-              ثبت‌نام
-            </button>
+            {!is_tutor && (
+              <button
+                onClick={handleRegisterClick}
+                className="inline-flex items-center justify-center rounded-xl bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-indigo-700 hover:shadow-lg hover:shadow-indigo-200"
+              >
+                ثبت‌نام
+              </button>
+            )}
 
             <button
               onClick={() => setShowDetailsModal(true)}
@@ -69,7 +70,6 @@ export default function CourseCard({ course }: CourseCardProps) {
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         courseId={course.id}
-
       />
 
       <Modal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)}>

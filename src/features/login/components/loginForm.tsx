@@ -37,6 +37,9 @@ export default function LoginForm() {
         toast.success("کاربر وارد شد.");
         router.push("/");
       },
+      onError(error, variables, onMutateResult, context) {
+        toast.success("نام کاربری یا رمز عبور نادرست میباشد");
+      },
     });
   };
 

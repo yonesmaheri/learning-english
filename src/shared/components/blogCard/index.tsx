@@ -5,7 +5,7 @@ type BlogCardProps = {
   author: string;
   publishedAt: string;
   excerpt: string;
-  href?: string;
+  id: string;
 };
 
 export default function BlogCard({
@@ -13,7 +13,7 @@ export default function BlogCard({
   author,
   publishedAt,
   excerpt,
-  href = "/blog",
+  id,
 }: BlogCardProps) {
   return (
     <article className="group rounded-2xl border border-gray-200 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100">
@@ -35,7 +35,7 @@ export default function BlogCard({
 
         <div className="mt-auto">
           <Link
-            href={href}
+            href={`/blog/${id}`}
             className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-600 transition-all duration-300 hover:gap-3"
           >
             مطالعه مقاله
