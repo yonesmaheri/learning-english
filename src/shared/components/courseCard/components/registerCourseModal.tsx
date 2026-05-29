@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +8,6 @@ import Modal from "../../modal";
 import CustomInput from "../../customInput";
 import { useEnroll } from "@/shared/api/services/courses";
 import { toast } from "react-toastify";
-
 
 const registerCourseSchema = z.object({
   currency: z.string().min(1, "انتخاب ارز الزامی است"),
@@ -29,13 +28,14 @@ type RegisterCourseModalProps = {
   isOpen: boolean;
   onClose: () => void;
   courseId: number;
-
+  price: string;
 };
 
 export default function RegisterCourseModal({
   isOpen,
   onClose,
   courseId,
+  price = "0",
 }: RegisterCourseModalProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { mutate, isPending } = useEnroll();
@@ -51,10 +51,14 @@ export default function RegisterCourseModal({
     resolver: zodResolver(registerCourseSchema),
     defaultValues: {
       currency: "",
-      payment_amount: "",
+      payment_amount: price,
       payment_proof: undefined,
     },
   });
+
+  useEffect(() => {
+    reset();
+  }, []);
 
   const paymentProof = watch("payment_proof");
 
@@ -65,11 +69,14 @@ export default function RegisterCourseModal({
     formData.append("payment_amount", values.payment_amount);
     formData.append("payment_proof", values.payment_proof);
 
-    mutate(formData,{onSuccess(data, variables, onMutateResult, context) {
-      toast.success('دوره ثبت نام شد')
-    },onError(error, variables, onMutateResult, context) {
-      toast.error('دوره از قبل ثبت نام شده است')
-    },})
+    mutate(formData, {
+      onSuccess(data, variables, onMutateResult, context) {
+        toast.success("دوره ثبت نام شد");
+      },
+      onError(error, variables, onMutateResult, context) {
+        toast.error("دوره از قبل ثبت نام شده است");
+      },
+    });
     reset();
     onClose();
   };
@@ -119,6 +126,7 @@ export default function RegisterCourseModal({
             label="مبلغ پرداختی"
             type="text"
             placeholder="مثلاً 500000"
+            disabled
             error={errors.payment_amount?.message}
             {...register("payment_amount")}
           />

@@ -70,6 +70,7 @@ export default function CourseCard({ course }: CourseCardProps) {
         isOpen={showConfirmModal}
         onClose={() => setShowConfirmModal(false)}
         courseId={course.id}
+        price={course.price_per_toman}
       />
 
       <Modal isOpen={showLoginModal} onClose={() => setShowLoginModal(false)}>
