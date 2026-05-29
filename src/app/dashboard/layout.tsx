@@ -1,3 +1,4 @@
+import Navbar from "@/shared/components/navbar";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,6 +13,7 @@ export default function DashboardLayout({
 }>) {
   return (
     <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" dir="rtl">
+      <Navbar />
       {children}
     </main>
   );
