@@ -12,8 +12,6 @@ export const useUpdateStudent = () => {
   });
 };
 
-
-
 const studentDashboard = async () => {
   const res = await apiCall.get("/students/me/dashboard/");
   return res.data;
@@ -22,5 +20,16 @@ export const useStudentDashboard = () => {
   return useQuery({
     queryKey: ["student/dashboard"],
     queryFn: studentDashboard,
+  });
+};
+
+const payments = async () => {
+  const res = await apiCall.get("/payments/");
+  return res.data;
+};
+export const usePayments = () => {
+  return useQuery({
+    queryKey: ["payments"],
+    queryFn: payments,
   });
 };

@@ -3,52 +3,10 @@
 import { useMe } from "@/shared/api/services/auth";
 import { useStudentDashboard } from "@/shared/api/services/student";
 import Skeleton from "@/shared/components/skeleton";
+import { mapStatus } from "@/shared/lib/mapStatus";
 import Link from "next/link";
 
 function StudentDashboard() {
-  function mapStatus(status: string) {
-    switch (status) {
-      case "pending_payment":
-        return (
-          <div className="inline-block w-fit text-xs text-white py-1 px-2 rounded-full bg-blue-600/80">
-            در انتظار پرداخت
-          </div>
-        );
-      case "draft":
-        return (
-          <div className="inline-block w-fit text-xs text-white py-1 px-2 rounded-full bg-gray-600/80">
-            نامشخص
-          </div>
-        );
-      case "under_review":
-        return (
-          <div className="inline-block w-fit text-xs text-white py-1 px-2 rounded-full bg-yellow-500/80">
-            در حال بررسی
-          </div>
-        );
-      case "approved":
-        return (
-          <div className="inline-block w-fit text-xs text-white py-1 px-2 rounded-full bg-green-600/80">
-            تایید شده
-          </div>
-        );
-      case "rejected":
-        return (
-          <div className="inline-block w-fit text-xs text-white py-1 px-2 rounded-full bg-red-600/80">
-            رد شده
-          </div>
-        );
-      case "cancelled":
-        return (
-          <div className="inline-block w-fit text-xs text-white py-1 px-2 rounded-full bg-orange-600/80">
-            انصراف داده شده
-          </div>
-        );
-
-      default:
-        break;
-    }
-  }
 
   const { isPending, data, isError } = useStudentDashboard();
   const { data: myData, isSuccess } = useMe();

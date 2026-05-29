@@ -6,12 +6,10 @@ import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useState } from "react";
 
 function Providers({ children }: { children: ReactNode }) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: { queries: { retry: 1 } },
-      }),
-  );
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: 1 } },
+  });
+
   const pathname = usePathname();
 
   useEffect(() => {

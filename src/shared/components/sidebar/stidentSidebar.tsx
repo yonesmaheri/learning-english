@@ -14,9 +14,13 @@ const links = [
     href: "/dashboard/student/courses",
   },
   {
+    title: "پرداخت ها",
+    href: "/dashboard/student/payments",
+  },
+  {
     title: "پروفایل",
     href: "/dashboard/student/edit",
-  }
+  },
 ];
 
 export default function StudentSidebar() {
