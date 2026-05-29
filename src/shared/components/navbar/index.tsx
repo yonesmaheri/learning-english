@@ -5,8 +5,8 @@ import NavLogo from "./components/navLogo";
 import NavMenu from "./components/navMenu";
 import NavActions from "./components/navActions";
 import MobileMenuButton from "./components/mobileMenuButton";
-import { useMe } from "@/shared/api/services/auth";
 import Skeleton from "../skeleton";
+import { useAuthStore } from "@/shared/store/auth";
 
 const navItems = [
   { label: "خانه", href: "/" },
@@ -16,7 +16,10 @@ const navItems = [
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const { isPending, isSuccess, data } = useMe();
+
+  const { is_loggedin, is_tutor } = useAuthStore();
+
+  const isLoading = is_loggedin === null;
 
   return (
     <header
@@ -34,10 +37,10 @@ export default function Navbar() {
           </div>
 
           <div className="order-1 md:order-3 hidden items-center gap-3 md:flex">
-            {isPending ? (
-              <Skeleton className="w-20 h-10 rounded-md" />
+            {isLoading ? (
+              <Skeleton className="h-10 w-20 rounded-md" />
             ) : (
-              <NavActions isSuccess={isSuccess} data={data} />
+              <NavActions isLoggedIn={is_loggedin} isTutor={is_tutor} />
             )}
           </div>
 
@@ -56,11 +59,16 @@ export default function Navbar() {
         >
           <div className="space-y-4 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm">
             <NavMenu items={navItems} mobile />
+
             <div className="border-t border-gray-100 pt-4">
-              {isPending ? (
-                <Skeleton className="w-20 h-10 rounded-md" />
+              {isLoading ? (
+                <Skeleton className="h-10 w-20 rounded-md" />
               ) : (
-                <NavActions isSuccess={isSuccess} data={data} />
+                <NavActions
+                  mobile
+                  isLoggedIn={is_loggedin}
+                  isTutor={is_tutor}
+                />
               )}
             </div>
           </div>

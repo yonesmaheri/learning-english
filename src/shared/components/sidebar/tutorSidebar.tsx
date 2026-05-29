@@ -1,7 +1,8 @@
 "use client";
 
+import { useLogout } from "@/shared/api/services/auth";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const links = [
   {
@@ -32,7 +33,17 @@ const links = [
 
 export default function TutorSidebar() {
   const pathname = usePathname();
-
+  const router = useRouter();
+  const { mutate: logoutMutate, isPending } = useLogout();
+  function logout() {
+    logoutMutate(undefined, {
+      onSuccess() {
+        localStorage.removeItem("token");
+        localStorage.removeItem("access");
+        router.push("/");
+      },
+    });
+  }
   return (
     <div className="flex h-full flex-col">
       <div className="mb-10">
@@ -65,6 +76,7 @@ export default function TutorSidebar() {
       </nav>
 
       <button
+        onClick={logout}
         className="
           mt-6 flex items-center gap-3 rounded-2xl
           border border-red-500/20 bg-red-500/10
