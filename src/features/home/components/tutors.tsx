@@ -7,7 +7,7 @@ function Tutors({ data }: { data: any[] }) {
       <div className="w-full flex items-center justify-between mt-10">
         <h2 className="font-bold text-xl lg:text-2xl">اساتید منتخب</h2>
         <Link
-          href={`/tutors`}
+          href={`/tutor`}
           className="text-xs  text-gray-400 transition-all duration-300 group-hover:text-indigo-500 group-hover:border-indigo-500 border px-4 py-2.5 rounded-xl border-gray-400"
         >
           همه مدرسان
